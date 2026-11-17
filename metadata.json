@@ -1,0 +1,6 @@
+{
+  "name": "The Time Explorer: Irregular Verbs",
+  "description": "An interactive 6th-grade English irregular verbs trainer with multiple-choice, active typing, sentence context drills, pronunciation audio, Catalan hints, and a pattern-grouped study Codex.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

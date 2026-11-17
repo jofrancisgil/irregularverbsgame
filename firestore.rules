@@ -1,0 +1,65 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Global safety net: deny all reads and writes unless explicitly matched
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function isValidLeaderboardEntry(data, expectedDifficulty) {
+      return data.keys().hasAll(['name', 'score', 'accuracy', 'difficulty', 'mode', 'date', 'createdAt'])
+        && data.keys().hasOnly(['name', 'score', 'accuracy', 'difficulty', 'mode', 'date', 'createdAt'])
+        && data.name is string
+        && data.name.size() >= 1
+        && data.name.size() <= 20
+        && data.name.matches('^[A-Za-zÀ-ÖØ-öø-ÿ0-9 _\\-\\.]{1,20}$')
+        && data.score is int
+        && data.score >= 1
+        && data.score <= 50000
+        && data.accuracy is int
+        && data.accuracy >= 0
+        && data.accuracy <= 100
+        && data.difficulty is string
+        && data.difficulty == expectedDifficulty
+        && data.mode is string
+        && data.mode in ['choice', 'typing', 'context']
+        && data.date is string
+        && data.date.size() >= 1
+        && data.date.size() <= 20
+        && data.createdAt == request.time;
+    }
+
+    match /leaderboard_easy/{entryId} {
+      allow get: if isValidId(entryId);
+      allow list: if request.query.limit <= 50;
+      allow create: if isValidId(entryId) && isValidLeaderboardEntry(incoming(), 'easy');
+      allow update: if false;
+      allow delete: if false;
+    }
+
+    match /leaderboard_normal/{entryId} {
+      allow get: if isValidId(entryId);
+      allow list: if request.query.limit <= 50;
+      allow create: if isValidId(entryId) && isValidLeaderboardEntry(incoming(), 'normal');
+      allow update: if false;
+      allow delete: if false;
+    }
+
+    match /leaderboard_master/{entryId} {
+      allow get: if isValidId(entryId);
+      allow list: if request.query.limit <= 50;
+      allow create: if isValidId(entryId) && isValidLeaderboardEntry(incoming(), 'master');
+      allow update: if false;
+      allow delete: if false;
+    }
+  }
+}

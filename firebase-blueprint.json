@@ -1,0 +1,76 @@
+{
+  "entities": {
+    "LeaderboardEntry": {
+      "title": "LeaderboardEntry",
+      "description": "A public mission score submitted by a Time Explorer student without login.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Explorer callsign displayed on the shared leaderboard.",
+          "minLength": 1,
+          "maxLength": 20,
+          "pattern": "^[A-Za-zÀ-ÖØ-öø-ÿ0-9 _\\-\\.]{1,20}$"
+        },
+        "score": {
+          "type": "integer",
+          "description": "Final mission score earned in a timed mission."
+        },
+        "accuracy": {
+          "type": "integer",
+          "description": "Accuracy percentage (0-100) for the mission."
+        },
+        "difficulty": {
+          "type": "string",
+          "description": "Mission difficulty tier.",
+          "enum": ["easy", "normal", "master"]
+        },
+        "mode": {
+          "type": "string",
+          "description": "Practice mode played during the mission.",
+          "enum": ["choice", "typing", "context"]
+        },
+        "date": {
+          "type": "string",
+          "description": "Formatted short display date of the mission.",
+          "minLength": 1,
+          "maxLength": 20
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp enforced via request.time."
+        }
+      },
+      "required": [
+        "name",
+        "score",
+        "accuracy",
+        "difficulty",
+        "mode",
+        "date",
+        "createdAt"
+      ]
+    }
+  },
+  "firestore": {
+    "/leaderboard_easy/{entryId}": {
+      "schema": {
+        "$ref": "#/entities/LeaderboardEntry"
+      },
+      "description": "Shared public Cadet (easy) classroom leaderboard entries ordered by score."
+    },
+    "/leaderboard_normal/{entryId}": {
+      "schema": {
+        "$ref": "#/entities/LeaderboardEntry"
+      },
+      "description": "Shared public Voyager (normal) classroom leaderboard entries ordered by score."
+    },
+    "/leaderboard_master/{entryId}": {
+      "schema": {
+        "$ref": "#/entities/LeaderboardEntry"
+      },
+      "description": "Shared public Chrono Lord (master) classroom leaderboard entries ordered by score."
+    }
+  }
+}
